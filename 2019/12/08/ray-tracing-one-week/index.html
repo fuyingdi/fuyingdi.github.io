@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+<!-- Baidu Tongji -->
+<script>var _hmt = _hmt || []</script>
+<script async src="//hm.baidu.com/hm.js?a92f9828c7fa171ca2e18771ae4efc6d"></script>
+<!-- End Baidu Tongji -->
+
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>两小时光线追踪速成——《RayTracing in One Weekend》实践 | 风吹歪的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#b3b3ff">
+    
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="最近利用一个周末实践了一下Peter Shelley的《Ray Tracing In One Weekend》，发现原来意外的简洁优美，代码量也非常少，特意总结一下。 1.输出图片这里没用书里的方法，因为Windows的PPM格式不能直接看，所以用了一个兼容性更好的方法，输出PNG，这里要感谢Milo Yip大大提供的工具 极简PNG编码函数svpng() 用法： 1#include &quot;svpng">
+<meta property="og:type" content="article">
+<meta property="og:title" content="两小时光线追踪速成——《RayTracing in One Weekend》实践">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;08&#x2F;ray-tracing-one-week&#x2F;index.html">
+<meta property="og:site_name" content="风吹歪的博客">
+<meta property="og:description" content="最近利用一个周末实践了一下Peter Shelley的《Ray Tracing In One Weekend》，发现原来意外的简洁优美，代码量也非常少，特意总结一下。 1.输出图片这里没用书里的方法，因为Windows的PPM格式不能直接看，所以用了一个兼容性更好的方法，输出PNG，这里要感谢Milo Yip大大提供的工具 极简PNG编码函数svpng() 用法： 1#include &quot;svpng">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-11T05:18:55.014Z">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="风吹歪的博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">风吹歪</h5>
+          <a href="mailto:fuyingdi2@gmail.com" title="fuyingdi2@gmail.com" class="mail">fuyingdi2@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fuyingdi" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://twitter.com/fu_ying_di"  >
+                <i class="icon icon-lg icon-twitter"></i>
+                Twitter
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">两小时光线追踪速成——《RayTracing in One Weekend》实践</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">两小时光线追踪速成——《RayTracing in One Weekend》实践</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-12-08T13:13:48.000Z" itemprop="datePublished" class="page-time">
+  2019-12-08
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#1-输出图片"><span class="post-toc-number">1.</span> <span class="post-toc-text">1.输出图片</span></a></li><li class="post-toc-item post-toc-level-6"><a class="post-toc-link" href="#2-定义向量类"><span class="post-toc-number">2.</span> <span class="post-toc-text">2.定义向量类</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-ray-tracing-one-week"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">两小时光线追踪速成——《RayTracing in One Weekend》实践</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-12-08 21:13:48" datetime="2019-12-08T13:13:48.000Z"  itemprop="datePublished">2019-12-08</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>最近利用一个周末实践了一下Peter Shelley的《Ray Tracing In One Weekend》，发现原来意外的简洁优美，代码量也非常少，特意总结一下。</p>
+<h6 id="1-输出图片"><a href="#1-输出图片" class="headerlink" title="1.输出图片"></a>1.输出图片</h6><p>这里没用书里的方法，因为Windows的PPM格式不能直接看，所以用了一个兼容性更好的方法，输出PNG，这里要感谢Milo Yip大大提供的工具 <a href="https://zhuanlan.zhihu.com/p/26525083">极简PNG编码函数svpng()</a></p>
+<p>用法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"svpng.inc"</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test_rgb</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> rgb[<span class="number">256</span> * <span class="number">256</span> * <span class="number">3</span>], *p = rgb;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">unsigned</span> x, y;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    FILE *fp = fopen(<span class="string">"rgb.png"</span>, <span class="string">"wb"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">for</span> (y = <span class="number">0</span>; y &lt; <span class="number">256</span>; y++)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">for</span> (x = <span class="number">0</span>; x &lt; <span class="number">256</span>; x++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">            *p++ = (<span class="keyword">unsigned</span> <span class="keyword">char</span>)x;    <span class="comment">/* R */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">            *p++ = (<span class="keyword">unsigned</span> <span class="keyword">char</span>)y;    <span class="comment">/* G */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">            *p++ = <span class="number">128</span>;                 <span class="comment">/* B */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    svpng(fp, <span class="number">256</span>, <span class="number">256</span>, rgb, <span class="number">0</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    fclose(fp);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h6 id="2-定义向量类"><a href="#2-定义向量类" class="headerlink" title="2.定义向量类"></a>2.定义向量类</h6><p>定义一个vec3类表示三维向量，既可以用来表示颜色，也可以用来表示坐标，还可以用来表示空间向量，是一个万金油类，因此重载一些常见的运算，值得一提的是向量的点积和叉积运算。点积的结果是标量，在图形学中可以用来求投影长度，也可以求向量夹角。叉积的结果是向量，可以用来求两个向量的法向量。所以定义两个内联函数dot和cross来求vec3的点积和叉积。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">vec3</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="class">&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span>:</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">float</span> e[<span class="number">3</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">  	vec3() &#123;&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">  	vec3(<span class="keyword">float</span> e0, <span class="keyword">float</span> e1, <span class="keyword">float</span> e2)&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">        e[<span class="number">0</span>] = e0;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    	e[<span class="number">1</span>] = e1;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    	e[<span class="number">2</span>] = e2;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">  	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">x</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> e[<span class="number">0</span>]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">y</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> e[<span class="number">1</span>]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">z</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> e[<span class="number">2</span>]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">r</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> e[<span class="number">0</span>]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">g</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> e[<span class="number">1</span>]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">b</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> e[<span class="number">2</span>]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">inline</span> <span class="keyword">const</span> vec3 &amp;<span class="keyword">operator</span>+() <span class="keyword">const</span> &#123; <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> vec3 <span class="keyword">operator</span>-() <span class="keyword">const</span> &#123; <span class="keyword">return</span> vec3(-e[<span class="number">0</span>], -e[<span class="number">1</span>], -e[<span class="number">2</span>]); &#125; <span class="comment">//????</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> <span class="keyword">float</span> <span class="keyword">operator</span>[](<span class="keyword">int</span> i) <span class="keyword">const</span> &#123; <span class="keyword">return</span> e[i]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> <span class="keyword">float</span> &amp;<span class="keyword">operator</span>[](<span class="keyword">int</span> i) &#123; <span class="keyword">return</span> e[i]; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> vec3 &amp;<span class="keyword">operator</span>+=(<span class="keyword">const</span> vec3 &amp;v2);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> vec3 &amp;<span class="keyword">operator</span>-=(<span class="keyword">const</span> vec3 &amp;v3);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> vec3 &amp;<span class="keyword">operator</span>*=(<span class="keyword">const</span> vec3 &amp;v2);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">inline</span> vec3 &amp;<span class="keyword">operator</span>/=(<span class="keyword">const</span> vec3 &amp;v2);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">const</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> <span class="built_in">sqrt</span>(e[<span class="number">0</span>] * e[<span class="number">0</span>] + e[<span class="number">1</span>] * e[<span class="number">1</span>] + e[<span class="number">2</span>] * e[<span class="number">2</span>]);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">  	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">squared_length</span><span class="params">()</span> <span class="keyword">const</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line"><span class="function">  	</span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">	   	<span class="keyword">return</span> e[<span class="number">0</span>] * e[<span class="number">0</span>] + e[<span class="number">1</span>] * e[<span class="number">1</span>] + e[<span class="number">2</span>] * e[<span class="number">2</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">  	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">  	<span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">make_unit_vector</span><span class="params">()</span></span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">&#125;;</span></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">float</span> <span class="title">dot</span><span class="params">(<span class="keyword">const</span> vec3&amp; v1, <span class="keyword">const</span> vec3&amp; v2)</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">return</span> v1.e[<span class="number">0</span>]*v2.e[<span class="number">0</span>]+v1.e[<span class="number">1</span>]*v2.e[<span class="number">1</span>]+v1.e[<span class="number">2</span>]*v2.e[<span class="number">2</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> vec3 <span class="title">cross</span><span class="params">(<span class="keyword">const</span> vec3 &amp;v1, <span class="keyword">const</span> vec3 v2)</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">  	<span class="keyword">return</span> vec3((v1.e[<span class="number">1</span>]*v2.e[<span class="number">2</span>] - v1.e[<span class="number">2</span>]*v2.e[<span class="number">1</span>]),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">​        (-(v1.e[<span class="number">0</span>]*v2.e[<span class="number">2</span>]- v1.e[<span class="number">2</span>]*v2.e[<span class="number">0</span>])),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">​        (v1.e[<span class="number">0</span>]*v2.e[<span class="number">1</span>]- v1.e[<span class="number">1</span>]*v2.e[<span class="number">0</span>]));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2019-12-11T05:18:55.014Z" itemprop="dateUpdated">2019-12-11 13:18:55</time>
+</span><br>
+
+
+        
+        如果你觉得不错的话，赞助我喝杯咖啡吧
+        
+    </div>
+    
+    <footer>
+        <a href="http://yoursite.com">
+            <img src="/img/avatar.jpg" alt="风吹歪">
+            风吹歪
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2019/12/08/ray-tracing-one-week/&title=《两小时光线追踪速成——《RayTracing in One Weekend》实践》 — 风吹歪的博客&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2019/12/08/ray-tracing-one-week/&title=《两小时光线追踪速成——《RayTracing in One Weekend》实践》 — 风吹歪的博客&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2019/12/08/ray-tracing-one-week/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《两小时光线追踪速成——《RayTracing in One Weekend》实践》 — 风吹歪的博客&url=http://yoursite.com/2019/12/08/ray-tracing-one-week/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2019/12/08/ray-tracing-one-week/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/12/08/hello-world/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Hello World</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+<section class="comments" id="comments">
+    <div id="disqus_thread"></div>
+    <script>
+    var disqus_shortname = 'true';
+    lazyScripts.push('//' + disqus_shortname + '.disqus.com/embed.js')
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>风吹歪 &copy; 2019</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2019/12/08/ray-tracing-one-week/&title=《两小时光线追踪速成——《RayTracing in One Weekend》实践》 — 风吹歪的博客&pic=http://yoursite.com/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2019/12/08/ray-tracing-one-week/&title=《两小时光线追踪速成——《RayTracing in One Weekend》实践》 — 风吹歪的博客&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2019/12/08/ray-tracing-one-week/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《两小时光线追踪速成——《RayTracing in One Weekend》实践》 — 风吹歪的博客&url=http://yoursite.com/2019/12/08/ray-tracing-one-week/&via=http://yoursite.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://yoursite.com/2019/12/08/ray-tracing-one-week/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=http://yoursite.com/2019/12/08/ray-tracing-one-week/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '(つェ⊂)藏好啦';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
